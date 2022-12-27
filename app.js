@@ -1,0 +1,1753 @@
+
+
+//////////INICIAN ESTRUCTURAS DE DATOS//////////
+
+////////////////////////////////////////////////////////////////////////////////EMPIEZA ARBOL AVL //////////////////////////////////////////////////////////////////////////////////////////
+
+
+class Nodo{
+
+    constructor(d){
+        this.dato = d;
+        this.fe = 0;
+        this.hijoDerecho = null;
+        this.hijoIzquierdo = null;
+    }
+
+    textGraphviz(){
+    
+        if( this.hijoIzquierdo==  null && this.hijoDerecho==null){
+            return this.dato
+        }else{
+            var texto = "";
+            if(this.hijoIzquierdo != null){
+                texto = this.dato + "->"+this.hijoIzquierdo.textGraphviz() + "\n";
+            }
+            if(this.hijoDerecho != null){
+                texto += this.dato + "->" +this.hijoDerecho.textGraphviz() +"\n";
+            }
+            return texto;
+        }
+    }
+
+}
+
+class ArbolAVL{
+
+    constructor(){
+        this.raiz = null;
+    }
+
+    obtenerRaiz(){
+        return this.raiz;
+    }
+
+    buscar(d,r){
+        if(raiz == null){
+            return null;
+        }else if(r.dato == d){
+            return r;
+        }else if(r.dato <d){
+            return buscar(d, r.hijoDerecho);
+        }else{
+            return buscar(d, r.hijoIzquierdo);
+        } 
+    }
+
+    //Obtener el factor equilibrio
+    obtenerFE(x){
+    if(x==null){
+        return -1;
+    }else{
+        return x.fe;
+        }
+    }
+
+    //Rotacion simple izquierda  
+    rotacionIzquierda(c){
+    var auxiliar = c.hijoIzquierdo;
+    c.hijoIzquierdo = auxiliar.hijoDerecho;
+    auxiliar.hijoDerecho = c;
+    c.fe = Math.max(this.obtenerFE(c.hijoIzquierdo), this.obtenerFE(c.hijoDerecho))+1;
+    auxiliar.fe = Math.max(this.obtenerFE(auxiliar.hijoIzquierdo), this.obtenerFE(auxiliar.hijoDerecho))+1;
+    return auxiliar;
+    }
+
+    //Rotacion simple derecha
+    rotacionDerecha(c){
+    var auxiliar = c.hijoDerecho;
+    c.hijoDerecho = auxiliar.hijoIzquierdo;
+    auxiliar.hijoIzquierdo = c;
+    c.fe = Math.max(this.obtenerFE(c.hijoIzquierdo), this.obtenerFE(c.hijoDerecho))+1;
+    auxiliar.fe = Math.max(this.obtenerFE(auxiliar.hijoIzquierdo), this.obtenerFE(auxiliar.hijoDerecho))+1;
+    return auxiliar;
+    }
+
+    //puede que sean al reves
+    rotacionDobleIzquierda(c){
+    var temporal;
+    c.hijoIzquierdo = this.rotacionDerecha(c.hijoIzquierdo);
+    temporal = this.rotacionIzquierda(c);
+    return temporal;
+    }
+
+    rotacionDobleDerecha(c){
+        var temporal;
+        c.hijoDerecho = this.rotacionIzquierda(c.hijoDerecho);
+        temporal = this.rotacionDerecha(c);
+        return temporal;
+    }
+
+    //Metodo insertar AVL
+    insertarAVL(nuevo, subAr){
+    var nuevoPadre = subAr;
+    if(nuevo.dato < subAr.dato){
+        if(subAr.hijoIzquierdo == null){
+            subAr.hijoIzquierdo = nuevo;
+        }else{
+            subAr.hijoIzquierdo = this.insertarAVL(nuevo, subAr.hijoIzquierdo);
+            if((this.obtenerFE(subAr.hijoIzquierdo)- this.obtenerFE(subAr.hijoDerecho) ==2)){
+                if(nuevo.dato < subAr.hijoIzquierdo.dato){
+                    nuevoPadre = this.rotacionIzquierda(subAr);
+                }else{
+                    nuevoPadre = this.rotacionDobleIzquierda(subAr);
+                }
+            }
+        }
+    }
+    else if(nuevo.dato > subAr.dato){
+        if(subAr.hijoDerecho == null){
+            subAr.hijoDerecho = nuevo;
+        }else{
+            subAr.hijoDerecho = this.insertarAVL(nuevo, subAr.hijoDerecho);
+            if((this.obtenerFE(subAr.hijoDerecho)- this.obtenerFE(subAr.hijoIzquierdo) ==2)){
+                if(nuevo.dato > subAr.hijoDerecho.dato){
+                    nuevoPadre = this.rotacionDerecha(subAr);
+                }else{
+                    nuevoPadre = this.rotacionDobleDerecha(this.raiz); //puede ser sub
+                }
+                
+            }
+        }
+    }else{
+        System.out.println("Nodo duplicado");
+    }
+    
+    //Actualizar altura
+    if((subAr.hijoIzquierdo == null) && (subAr.hijoDerecho != null)){
+        subAr.fe = subAr.hijoDerecho.fe+1;
+    }else if((subAr.hijoDerecho == null) && subAr.hijoIzquierdo != null){
+        subAr.fe = subAr.hijoIzquierdo.fe+1;
+    }else{
+        subAr.fe = Math.max(this.obtenerFE(subAr.hijoIzquierdo), this.obtenerFE(subAr.hijoDerecho))+1;
+    }
+    return nuevoPadre;
+    }
+
+
+    //Insertar
+    insertar(d){
+    var nuevo = new Nodo(d);
+    if(this.raiz == null){
+        this.raiz = nuevo;
+    }else{
+        this.raiz = this.insertarAVL(nuevo, this.raiz);
+    }
+    }
+
+    //Recorridos
+    inOrden(r){
+    if(r!=null){
+        this.inOrden(r.hijoIzquierdo);
+        console.log(r.dato+" ");
+        this.inOrden(r.hijoDerecho);
+        }
+    }
+
+    preOrden(r){
+        if(r!=null){
+            console.log(r.dato+" ");
+            this.preOrden(r.hijoIzquierdo);
+            this.preOrden(r.hijoDerecho);
+        }
+    }
+
+    postOrden(r){
+        if(r!=null){
+            this.postOrden(r.hijoIzquierdo);
+            this.postOrden(r.hijoDerecho);
+            console.log(r.dato+"");
+        }
+         
+    }
+
+
+    obtenerCodigoGraphviz(){
+         var texto = "digraph G { \nlabel=\" Arbol AVL - ID peliculas \" \n";
+         texto += "node[shape = circle] \n";
+         texto += "node[style = filled] \n";
+         texto += "node[fillcolor = yellow] \n";
+         texto += "node[color = white] \n";
+         texto += "edge[color = black] \n";
+        if(this.raiz !=null){
+            texto += this.raiz.textGraphviz();
+        }
+        texto += "}";
+
+        d3.select("#lienzoAVL").graphviz()
+            .width(900)
+            .height(500)
+            .renderDot(texto)
+
+        return texto;  
+    }
+
+}
+
+
+var peliculasAvl = new ArbolAVL()
+var salida =document.getElementById("movies")
+
+function CargaMasivaPeliculas(e){
+    var archivo =e.target.files[0];
+    
+    //si no encuentra el archivo
+    if (!archivo){
+        return;
+    }
+  
+    let lector=new FileReader();
+    lector.onload=function(e){
+        let contenido = e.target.result;
+        
+        //crea el objeto json
+        const objeto=JSON.parse(contenido);
+        console.log(objeto);
+  
+        //para mandarlo a la estructura
+        for (const key in objeto){
+            let peliculas =objeto[key]
+            peliculasAvl.insertar(peliculas.id_pelicula)
+        }
+
+        
+        
+        for (const key in objeto){
+            let peliculas2 =objeto[key]
+            listaPeliculas.append(peliculas2.id_pelicula, peliculas2.nombre_pelicula , peliculas2.description , peliculas2.puntuacion_star, peliculas2.precion_Q, peliculas2.categoria)
+            nombrePeliculas.push(peliculas2.nombre_pelicula);
+
+           
+        }
+
+        alert("Archivo cargado Exitosamente")
+        
+       
+        
+   
+    }
+    
+  
+    lector.readAsText(archivo);
+  
+  
+  }
+  
+  document.getElementById("jsonpeliculas").addEventListener("change", CargaMasivaPeliculas, false)
+
+////////////////////////////////////////////////////////////////////////////////TERMINA ARBOL AVL /////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////EMPIEZA LISTA SIMPLE //////////////////////////////////////////////////////////////////////////////////////
+
+class Node {
+    constructor(dpi,nombre_completo,nombre_usuario,correo,contrasenia,telefono) {
+        this.dpi = dpi;
+        this.nombre_completo = nombre_completo;
+        this.nombre_usuario = nombre_usuario;
+        this.correo = correo;
+        this.contrasenia = contrasenia;
+        this.telefono = telefono;
+        this.next = null;
+    }
+}
+
+
+class ListaSimple{
+
+constructor() {
+    this.head = null;
+    this.size = 0;
+}
+
+/* Inserta un nodo al frente de la lista */
+push(dpi,nombre_completo,nombre_usuario,correo,contrasenia,telefono) {
+var new_node = new Node(dpi,nombre_completo,nombre_usuario,correo,contrasenia,telefono);
+new_node.next = this.head;
+this.head = new_node;
+this.size++;
+}
+
+/* Inserta un nodo en la posisión siguiente */
+append(dpi,nombre_completo,nombre_usuario,correo,contrasenia,telefono) {
+
+var new_node = new Node(dpi,nombre_completo,nombre_usuario,correo,contrasenia,telefono);
+
+if (this.head == null) {
+    this.head = new Node(dpi,nombre_completo,nombre_usuario,correo,contrasenia,telefono);
+    this.size++;
+    return;
+}
+
+
+ new_node.next = null;
+
+var last = this.head;
+while (last.next != null)
+    last = last.next;
+    last.next = new_node;
+    this.size++;
+    return;
+}
+
+deleteNode(key) {
+    var temp = this.head, prev = null;
+
+    // Si el propio nodo de cabecera tiene la clave que hay que borrar
+    if (temp != null && temp.nombre_usuario == key) {
+        this.head = temp.next; // Cambiando la cabeza
+        return;
+    }
+
+    // Buscar la clave que se va a eliminar, mantener la pista de el nodo anterior ya que necesitamos cambiar temp.next
+    while (temp != null && temp.nombre_usuario != key) {
+        prev = temp;
+        temp = temp.next;
+    }
+
+    // Si la clave no está en la lista
+    if (temp == null)
+        return;
+
+    // Quitando el nodo de la lista
+    prev.next = temp.next;
+}
+
+getCount() {
+    var temp = this.head;
+    var count = 0;
+    while (temp != null) {
+        count++;
+        temp = temp.next;
+    }
+    return count;
+}
+
+// para buscar la informacion en la lista
+buscar(indice){
+    let aux = this.head 
+    while (aux!=null){
+        if(aux.nombre_usuario == indice){
+            //document.write("Si aparece "+aux.nombre_usuario)
+            
+            return aux
+        }
+        aux = aux.next
+    }
+    //document.write("No aparece ")      
+    return this
+}
+
+printList() {
+var tnode = this.head;
+    while (tnode != null) {
+        document.write(tnode.dpi + " " + tnode.nombre_completo + " " + tnode.nombre_usuario + " " + tnode.correo + " " + tnode.contrasenia + " " + tnode.telefono + "<br>");
+        tnode = tnode.next;
+    }
+}
+
+//graficar con graphviz 
+graficarlista(){
+        var codigodot = "digraph G{\nlabel=\" Lista Simple - Clientes \";\nnode [shape=box];\n";
+        var temporal = this.head
+        var conexiones ="";
+        var nodos ="";
+        var numnodo= 0;
+        while (temporal != null) {
+            nodos+=  "N" + numnodo + "[label=\"" +"Dpi: "+ temporal.dpi+"\n Nombre: " +temporal.nombre_completo+"\n Usuario: "+temporal.nombre_usuario+ "\n Correo: " +temporal.correo + "\n Contraseña: " +temporal.contrasenia +  "\n Telefono: " +temporal.telefono + "\" ];\n"
+            if(temporal.next != null){
+                var auxnum = numnodo+1
+                conexiones += "N" + numnodo + " -> N" + auxnum + ";\n"
+            }
+            temporal = temporal.next
+            numnodo++;            
+        }
+        codigodot += "//agregando nodos\n"
+        codigodot += nodos+"\n"
+        codigodot += "//agregando conexiones o flechas\n"
+        codigodot += "{rank=same;\n"+conexiones+"\n}\n}"
+        console.log(codigodot)
+        //var arreglo = [0,2,3,4,5]
+        d3.select("#lienzoListaUsuarios").graphviz()
+            .width(900)
+            .height(500)
+            .renderDot(codigodot)
+}
+
+
+
+}
+
+var listaUsuarios = new ListaSimple()
+
+
+function CargaMasivaUsuarios(e){
+    var archivo =e.target.files[0];
+    
+    //si no encuentra el archivo
+    if (!archivo){
+        return;
+    }
+  
+    let lector=new FileReader();
+    lector.onload=function(e){
+        let contenido = e.target.result;
+        
+        //crea el objeto json
+        const objeto=JSON.parse(contenido);
+        console.log(objeto);
+  
+        //para mandarlo a la estructura
+        for (const key in objeto){
+            let usuario =objeto[key]
+            listaUsuarios.append(usuario.dpi,usuario.nombre_completo,usuario.nombre_usuario,usuario.correo,usuario.contrasenia,usuario.telefono)
+        }
+  
+        
+        
+        alert("Archivo cargado Exitosamente")
+        
+        
+        
+   
+    }
+    
+  
+    lector.readAsText(archivo);
+   
+  
+}
+  
+  document.getElementById("jsonusuarios").addEventListener("change", CargaMasivaUsuarios, false)
+
+
+
+////////////////////////////////////////////////////////////////////////////////TERMINA LISTA SIMPLE //////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////APARTADO DE ACTORES //////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class autor{
+    constructor(dni, nombre, correo, descripcion){
+        this.dni=dni
+        this.nombre=nombre
+        this.correo=correo
+        this.descripcion=descripcion
+    }
+
+}
+
+class nodoBinario {
+    constructor(autor) {
+        this.autor = autor
+        this.izq = null
+        this.der = null
+    }
+}
+
+class abb {
+    constructor() {
+        this.raiz = null
+    }
+    insertar(autor) {
+        let aux = new nodoBinario(autor)
+        if (this.raiz == null) {
+            this.raiz = aux
+        } else {
+            this.raiz = this.insertarNodo(this.raiz, aux)
+        }
+    }
+
+    devolverRaiz() {
+        return this.raiz
+    }
+
+    insertarNodo(raizActual, aux) {
+        if (raizActual != null) {
+            if (raizActual.autor.dni > aux.autor.dni) {
+                raizActual.izq = this.insertarNodo(raizActual.izq, aux)
+            } else if (raizActual.autor.dni < aux.autor.dni) {
+                raizActual.der = this.insertarNodo(raizActual.der, aux)
+            } else {
+                console.log("Ese man ya existe")
+            }
+            return raizActual
+        } else {
+            raizActual = aux
+            return raizActual
+        }
+    }
+
+
+    cadenNodos(raizActual) {
+        let nodos = ""
+        if (raizActual != null) {
+            nodos += "n" + raizActual.autor.dni + "[label=\"" + raizActual.autor.nombre + "\"]\n"
+            nodos += this.cadenNodos(raizActual.izq)
+            nodos += this.cadenNodos(raizActual.der)
+        }
+        return nodos
+    }
+
+    enlazar(raizActual) {
+        let cadena = ""
+        if (raizActual != null) {
+            cadena += this.enlazar(raizActual.izq)
+            cadena += this.enlazar(raizActual.der)
+            if (raizActual.izq != null) {
+                cadena += "n" + raizActual.autor.dni + "-> n" + raizActual.izq.autor.dni + "\n"
+            }
+            if (raizActual.der != null) {
+                cadena += "n" + raizActual.autor.dni + "-> n" + raizActual.der.autor.dni + "\n"
+            }
+        }
+        return cadena
+    }
+
+    buscar(x) {
+        var nombre = x.toLocaleLowerCase()
+        var namee = nombre.replace(/ /g, "")
+        var xcomp = this.buscador(this.raiz, namee)
+        if (xcomp == "Existe") {
+            var comp = this.buscarAutor(this.raiz, namee)
+            alert("Si existe")
+            return (comp)
+        } else {
+            alert("No existe")
+            return (0)
+        }
+    }
+    buscarAutor(raiz, b) {
+        var nombrex = raiz.autor.nombre
+        var nombres = nombrex.toLocaleLowerCase()
+        var namees = nombres.replace(/ /g, "")
+        if (raiz === null) {
+            return null;
+        } else if (b < namees) {
+            return this.buscarAutor(raiz.izq, b);
+        } else if (b > namees) {
+            return this.buscarAutor(raiz.der, b);
+        }
+        else {
+            return raiz.autor;
+        }
+    }
+
+    buscador(raiz, b) {
+        if (raiz != null) {
+            var nombrex = raiz.autor.nombre
+            var nombres = nombrex.toLocaleLowerCase()
+            var namees = nombres.replace(/ /g, "")
+            var x = this.buscador(raiz.izq, b)
+            var y = this.buscador(raiz.der, b)
+            if (namees == b || x == "Existe" || y == "Existe") {
+                return ("Existe")
+            }
+        }
+    }
+    inOrden(raiz_actual) {
+        if (raiz_actual != null) {
+            this.inOrden(raiz_actual.izq)
+            inOrden.insertar(raiz_actual.autor)
+            this.inOrden(raiz_actual.der)
+        }
+    }
+    preorden(raiz_actual) {
+        if (raiz_actual != null) {
+            preorden.insertar(raiz_actual.autor)
+            this.preorden(raiz_actual.izq)
+            this.preorden(raiz_actual.der)
+        }
+    }
+    postOrden(raiz_actual) {
+        if (raiz_actual != null) {
+            this.postOrden(raiz_actual.izq)
+            this.postOrden(raiz_actual.der)
+            postOrden.insertar(raiz_actual.autor)
+        }
+    }
+
+    metodos(){
+        this.inOrden(this.raiz)
+        this.preorden(this.raiz)
+        this.postOrden(this.raiz)
+    }
+    grafInOr(){
+        inOrden.graficar()
+    }
+    grafPreOr(){
+        preorden.graficar()
+    }
+    grafPostOr(){
+        postOrden.graficar()
+    }
+}
+
+/////////////////////////AQUI EMPIEZA LA LISTA QUE LUEGO SE INGRESARA EN EL ARBOL  BINARIO/////////////////////////////////////////
+
+
+class nodoListaActores {
+    constructor(objetoValor) {
+        this.valor = objetoValor;
+        this.siguiente = null;
+    }
+}
+
+class listaActores {
+    constructor() {
+        this.cabeza = null;
+        this.contador = 0;
+    }
+
+    insertar(objetico) {
+        if (this.cabeza == null) {
+            this.cabeza = new nodoListaActores(objetico);
+            this.contador = this.contador + 1;
+        } else {
+            var actual = this.cabeza;
+            while (actual.siguiente) {
+                actual = actual.siguiente;
+            }
+            actual.siguiente = new nodoListaActores(objetico);
+            this.contador = this.contador + 1;
+        }
+    }
+
+    graficar() {
+        var actual = this.cabeza
+        var texto = ""
+        var textoActores = document.getElementById("divActores")
+        textoActores.innerHTML=''
+        while (actual != null) {
+            texto += `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"> NOMBRE: ${actual.valor.nombre}</h5>
+                        <p class="card-text"> DESCRIPCIÓN: ${actual.valor.descripcion}.</p>
+                    </div>
+                </div>
+
+            `
+            actual = actual.siguiente;
+        }
+
+        textoActores.innerHTML = texto;
+    }
+}
+
+var arbolActor = new abb()
+var inOrden = new listaActores()
+var postOrden = new listaActores()
+var preorden = new listaActores()
+////////////////////////////////////////////////////////////////////////////////TERMINA APARTADO DE ACTORES //////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////EMPIEZA ARBOL BINARIO //////////////////////////////////////////////////////////////////////////////////////
+
+
+class NodoArbol{
+    constructor(dato){
+        //"dato" puede ser de cualquier tipo, incluso un objeto si se sobrescriben los operadores de comparación
+       this.dato = dato
+       this.izquierda = null
+       this.derecha = null
+    }
+      
+}
+
+nodosBinario= ""
+conexionesBinario = ""
+
+
+class Arbol{
+   // Funciones privadas
+   constructor(){
+       this.raiz = null
+       
+  }
+      
+   
+   agregar_recursivo(nodo, dato){
+
+       if(this.raiz == null) {
+           // si la lista está vacía agrega el dato al inicio de la cola
+           this.raiz = new NodoArbol(dato);
+           return
+       }
+   
+
+        if (dato < nodo.dato){
+           if (nodo.izquierda == null){
+               nodo.izquierda =new NodoArbol(dato)
+           }
+               
+           else{
+               this.agregar_recursivo(nodo.izquierda, dato)
+           }
+               
+        }
+           
+       else{
+
+           if (nodo.derecha == null){
+               nodo.derecha = new NodoArbol(dato)
+           }
+               
+           else{
+               this.agregar_recursivo(nodo.derecha, dato)
+           }
+               
+       }
+           
+   }
+      
+
+
+   
+   inorden_recursivo(nodo){
+       
+
+       if (nodo != null){
+
+           this.inorden_recursivo(nodo.izquierda)
+           let nodoTempo=nodo.dato
+           //nodos
+           nodosBinario+=('"' +nodoTempo +'"' + "[label=\""+nodoTempo+"\" ];\n");
+           console.log('"' +nodoTempo +'"' + "[label=\""+nodoTempo+"\" ];\n");
+           
+           let izquierda=nodo.izquierda
+
+           //conecciones a la izquierda
+           if (nodo.izquierda!=null){
+               conexionesBinario+=('"' +nodoTempo+'"' + " -> " +'"'+izquierda.dato+'"' + "[arrowhead =null ];\n")
+               console.log('"' +nodoTempo+'"' + " -> " +'"'+izquierda.dato+'"' + "[arrowhead =null ];\n")
+           }
+               
+           //conecciones derecha    
+           let derecha=nodo.derecha    
+           if (nodo.derecha!=null){
+               conexionesBinario+=('"' +nodoTempo+'"' + " -> " +'"'+derecha.dato +'"' + "[arrowhead =null ];\n")
+               console.log('"' +nodoTempo+'"' + " -> " +'"'+derecha.dato +'"' + "[arrowhead =null ];\n")
+           }
+               
+               
+           
+           this.inorden_recursivo(nodo.derecha)
+
+           
+           return
+       }
+       //console.log(nodos)
+       //console.log(conexiones)
+       return 
+   
+   }
+   
+   preorden_recursivo(nodo){
+
+       if (nodo!= null){
+           console.log(nodo.dato+ ", ")
+
+           let nodoTempo=nodo.dato
+           //nodos
+           nodosBinario+=('"' +nodoTempo +'"' + "[label=\""+nodoTempo+"\" ];\n");
+           console.log('"' +nodoTempo +'"' + "[label=\""+nodoTempo+"\" ];\n");
+           
+           let izquierda=nodo.izquierda
+
+           //conecciones a la izquierda
+           if (nodo.izquierda!=null){
+               conexionesBinario+=('"' +nodoTempo+'"' + " -> " +'"'+izquierda.dato+'"' + "[arrowhead =null ];\n")
+               console.log('"' +nodoTempo+'"' + " -> " +'"'+izquierda.dato+'"' + "[arrowhead =null ];\n")
+           }
+               
+           //conecciones derecha    
+           let derecha=nodo.derecha    
+           if (nodo.derecha!=null){
+               conexionesBinario+=('"' +nodoTempo+'"' + " -> " +'"'+derecha.dato +'"' + "[arrowhead =null ];\n")
+               console.log('"' +nodoTempo+'"' + " -> " +'"'+derecha.dato +'"' + "[arrowhead =null ];\n")
+           }
+
+
+
+           this.preorden_recursivo(nodo.izquierda)
+           this.preorden_recursivo(nodo.derecha)
+
+       }
+           
+   }
+       
+   postorden_recursivo(nodo){
+       if (nodo!= null){
+
+           this.postorden_recursivo(nodo.izquierda)
+           this.postorden_recursivo(nodo.derecha)
+
+           let nodoTempo=nodo.dato
+           //nodos
+           nodosBinario+=('"' +nodoTempo +'"' + "[label=\""+nodoTempo+"\" ];\n");
+           console.log('"' +nodoTempo +'"' + "[label=\""+nodoTempo+"\" ];\n");
+           
+           let izquierda=nodo.izquierda
+
+           //conecciones a la izquierda
+           if (nodo.izquierda!=null){
+               conexionesBinario+=('"' +nodoTempo+'"' + " -> " +'"'+izquierda.dato+'"' + "[arrowhead =null ];\n")
+               console.log('"' +nodoTempo+'"' + " -> " +'"'+izquierda.dato+'"' + "[arrowhead =null ];\n")
+           }
+               
+           //conecciones derecha    
+           let derecha=nodo.derecha    
+           if (nodo.derecha!=null){
+               conexionesBinario+=('"' +nodoTempo+'"' + " -> " +'"'+derecha.dato +'"' + "[arrowhead =null ];\n")
+               console.log('"' +nodoTempo+'"' + " -> " +'"'+derecha.dato +'"' + "[arrowhead =null ];\n")
+           }
+           console.log(nodo.dato+", ")
+       }
+           
+   }
+       
+   
+
+   buscar(nodo, busqueda){
+
+       if (nodo == null){
+           return null
+       }
+           
+       if (nodo.dato == busqueda){
+           return nodo
+       }
+           
+       if (busqueda < nodo.dato){
+           return this.buscar(nodo.izquierda, busqueda)
+       }
+           
+       else{
+           return this.buscar(nodo.derecha, busqueda)
+       }
+           
+   }
+
+   
+       
+
+   // Funciones públicas
+
+   agregar(dato){
+        this.agregar_recursivo(this.raiz, dato)
+   }
+      
+
+   enviarNombreArbol(){
+       var namePodcast;
+
+       namePodcast=document.getElementById("nombre").value;
+       arbol.agregar(namePodcast)
+       alert("Agregado")
+       console.log(arbol)
+   }
+
+
+
+   graficar(){
+       this.inorden_recursivo(this.raiz)
+
+
+       //("Imprimiendo árbol en orden: ")
+       var codigodot = "digraph G{\nlabel=\" Arbol binario \";\nnode [];\n";
+
+     
+
+       codigodot += "//agregando nodos\n"
+       codigodot+=nodosBinario
+       codigodot += "//agregando conexiones o flechas\n"
+       codigodot += conexionesBinario+"\n\n}"
+
+       
+       console.log(codigodot)
+       console.log(this.nodosBinario)
+       
+       d3.select("#lienzoBinarioActores").graphviz()
+           .width(900)
+           .height(500)
+           .renderDot(codigodot)
+
+           nodosBinario= ""
+           conexionesBinario = ""
+   }
+       
+
+   
+
+   buscar2(busqueda){
+       return this.buscar(this.raiz, busqueda)
+   }
+       
+
+}
+
+var arbolActores = new Arbol()
+
+
+function CargaMasivaActores(e){
+    var archivo =e.target.files[0];
+    
+    //si no encuentra el archivo
+    if (!archivo){
+        return;
+    }
+  
+    let lector=new FileReader();
+    lector.onload=function(e){
+        let contenido = e.target.result;
+        
+        //crea el objeto json
+        const objeto=JSON.parse(contenido);
+        console.log(objeto);
+  
+        //para mandarlo a la estructura
+        for (const key in objeto){
+            let actor =objeto[key]
+            arbolActores.agregar(actor.dni)
+        }
+
+        for (const key in objeto){
+            let nuevoActor =objeto[key]
+            var newActor = new autor(nuevoActor.dni, nuevoActor.nombre_actor, nuevoActor.correo, nuevoActor.descripcion)
+            arbolActor.insertar(newActor)
+        }
+
+      
+        arbolActor.metodos()
+  
+        alert("Archivo cargado Exitosamente")
+   
+    }
+    
+  
+    lector.readAsText(archivo);
+  
+  
+  }
+  
+  document.getElementById("jsonactores").addEventListener("change", CargaMasivaActores, false)
+
+function graficarInorden() {
+    arbolActor.grafInOr();
+}
+
+function graficarPreorden() {
+    arbolActor.grafPreOr()
+}
+
+function graficarPostOrden() {
+    arbolActor.grafPostOr()
+}
+
+////////////////////////////////////////////////////////////////////////////////TERMINA ARBOL BINARIO //////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////EMPIEZA TABLA HASH /////////////////////////////////////////////////////////////////////////////////////////
+
+class NodoHash {
+    constructor(dato) {
+        this.dato = dato;
+        this.siguiente = null;
+        this.anterior = null;
+        this.lista = new Tabla();
+    }
+}
+
+class Tabla{
+    constructor() {
+        this.primero = null;
+    }
+
+    // método para crear la lista normal
+    add(dato) {
+        let nuevo = new NodoHash(dato);
+        if(this.primero == null) {
+            // si la lista está vacía agrega el dato al inicio de la cola
+            this.primero = nuevo;
+        }else {
+            let aux = this.primero;
+            // mientras el nodo aux no sea null, pasará al siguiente nodo
+            while(aux.siguiente != null) {
+                aux = aux.siguiente;
+            }
+            //let repetido = this.repetido(dato, this.primero);
+            //if(repetido) {
+            //    console.log('Dato repetido, no se insertó: ' + dato + ' :(');
+            //    return
+            //}
+            // insertando el nuevo dato y asignando los apuntadores
+            aux.siguiente = nuevo;
+            nuevo.anterior = aux;
+        }
+    }
+
+    // método para insertar dentro de una lista 
+    add2(nombre, dato) {
+        let aux = this.primero;
+        while(aux != null) {
+            // si el nombre es igual al algún dato de la lista se incerta otra lista dentro de ese nodo
+            if (aux.dato == nombre) {
+                //let repetido = this.repetido(dato, aux.lista.primero);
+                //if (repetido) {
+                //    aux.lista.add(dato);
+                //    console.log('Dato repetido, no se insertó: ' + dato);
+                //}else {
+                    aux.lista.add(dato);
+                //}                
+                return
+            }
+            aux = aux.siguiente;
+        }
+        // si sale del while quiere decir que no hay tal nombre
+        console.log('No existe ese nombre:( intente con otro.');
+    }
+
+    // método para verificar si hay algún dato repetido
+    repetido(dato, aux) {
+        while(aux != null) {
+            if(aux.dato == dato) {
+                return true;
+            }
+            aux = aux.siguiente;
+        }
+        return false;
+    }
+
+    // método para mostrar la lista
+    mostrar() {
+        let aux = this.primero;
+        //console.log('=========LISTA=======');
+        document.write('=========LISTA======='+"<br>");
+        while(aux != null) {
+            //console.log('* ' + aux.dato);
+            document.write('* ' + aux.dato+"<br>");
+            let aux2 = aux.lista.primero;
+            while(aux2 != null) {
+                //console.log('   -> ' + aux2.dato);
+                document.write('   -> ' + aux2.dato+"<br>");
+                aux2 = aux2.siguiente;
+            }
+            aux = aux.siguiente;
+        }
+    }
+
+    // para buscar la informacion en la lista
+    buscar(indice){
+        let aux = this.primero 
+        while (aux!=null){
+            if(aux.dato == indice){
+                document.write("Si aparece "+aux.dato)
+                
+                return aux
+                }
+
+            aux = aux.siguiente
+            
+        }
+            
+            
+            
+        return this
+    }
+
+
+
+    //graficar con graphviz 
+    graficartabla(){
+        var codigodot = 'digraph G { label=" Tabla Hash";node [shape=box]; \n '+' a0 [label=< <TABLE border="0"  cellpadding="10" bgcolor="white">\n';
+        var temporal = this.primero
+        var conexiones ="";
+        var conexiones2="";
+        var nodos ="";
+        var numnodo= 0;
+        while (temporal != null) {
+            //nodos+=  "N" + numnodo + "[label=\"" + temporal.dato + "\" ];\n"
+
+            var numnodo2= 0;
+            nodos+=' <TR><TD border="3" style="radial" bgcolor="white"  gradientangle="60"> ' + temporal.dato + '</TD>     \n'
+            
+            
+            //para la lista 2
+            let temporal2=temporal.lista.primero
+
+            //conexiones += "N" + numnodo + " -> NN" + temporal.dato + "0;\n"
+            while(temporal2!=null){
+                //nodos+=  "NN" + temporal.dato +numnodo2 + "[label=\"" + temporal2.dato + "\" ];\n"
+                nodos+='<TD border="3" style="radial" bgcolor="white"  gradientangle="60"> ' + temporal2.dato + '</TD>'
+
+                if(temporal2.siguiente!=null){
+                    var auxnum2 = numnodo2+1
+                //conexiones+= "NN" + temporal.dato +numnodo2 + " -> NN" +temporal.dato + auxnum2 + ";\n"
+                    
+
+                }
+
+                
+                temporal2 = temporal2.siguiente
+                numnodo2++; 
+            }
+            
+
+
+
+
+
+
+            
+            //if(temporal.siguiente != null){
+               // var auxnum = numnodo+1
+                //conexiones2 += "N" + numnodo + " -> N" + auxnum + ";\n"
+            //}
+
+
+            temporal = temporal.siguiente
+            nodos+='</TR>'
+            numnodo++;            
+        }
+        //codigodot += "//agregando nodos\n"
+        codigodot += nodos+'</TABLE>>];}'
+        //codigodot += "//agregando conexiones o flechas\n"
+        //codigodot += conexiones2+"{rank=same;\n"+conexiones+"\n}\n}"
+        console.log(codigodot)
+        //var arreglo = [0,2,3,4,5]
+        d3.select("#lienzoTablaCategoria").graphviz()
+            .width(900)
+            .height(1500)
+            .renderDot(codigodot)
+    }
+
+    insertar(modulo,dato){
+        let indice=modulo%20
+        this.add2(indice,dato)
+
+    }
+}
+
+var tablaCategoria = new Tabla()
+
+tablaCategoria.add('0');
+tablaCategoria.add('1');
+tablaCategoria.add('2');
+tablaCategoria.add('3');
+tablaCategoria.add('4');
+tablaCategoria.add('5');
+tablaCategoria.add('6');
+tablaCategoria.add('7');
+tablaCategoria.add('8');
+tablaCategoria.add('9');
+tablaCategoria.add('10');
+tablaCategoria.add('11');
+tablaCategoria.add('12');
+tablaCategoria.add('13');
+tablaCategoria.add('14');
+tablaCategoria.add('15');
+tablaCategoria.add('16');
+tablaCategoria.add('17');
+tablaCategoria.add('18');
+tablaCategoria.add('19');
+
+
+
+function CargaMasivaCategorias(e){
+    var archivo =e.target.files[0];
+    
+    //si no encuentra el archivo
+    if (!archivo){
+        return;
+    }
+  
+    let lector=new FileReader();
+    lector.onload=function(e){
+        let contenido = e.target.result;
+        
+        //crea el objeto json
+        const objeto=JSON.parse(contenido);
+        console.log(objeto);
+  
+        //para mandarlo a la estructura
+        for (const key in objeto){
+            let categoria =objeto[key]
+            tablaCategoria.insertar(categoria.id_categoria, categoria.company)
+        }
+        
+        var texto = ""
+        for (const key in objeto){
+            let categoria =objeto[key]
+            
+            var textoCategoria = document.getElementById("dibujoCategoria")
+            textoCategoria.innerHTML = ""
+            texto += `
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Categoria ${categoria.id_categoria}</h5>
+                        <p class="card-text">${categoria.company}</p>
+                    </div>
+                </div>
+            </div>
+            
+            `
+        }
+        textoCategoria.innerHTML = texto
+
+        alert("Archivo cargado Exitosamente")
+        
+        
+        
+   
+    }
+    
+  
+    lector.readAsText(archivo);
+  
+  
+  }
+  
+document.getElementById("jsoncategorias").addEventListener("change", CargaMasivaCategorias, false)
+
+
+////////////////////////////////////////////////////////////////////////////////TERMINA TABLA HASH /////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////INICIA LISTA PELICULAS //////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class NodoListaPelicula {
+    constructor(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria) {
+        this.id_pelicula = id_pelicula;
+        this.nombre_pelicula = nombre_pelicula;
+        this.description = description;
+        this.puntuacion_star = puntuacion_star;
+        this.precion_Q = precion_Q;
+        this.paginas = paginas;
+        this.categoria = categoria;
+        this.next = null;
+    }
+}
+
+
+class ListaSimple2{
+
+constructor() {
+    this.head = null;
+    this.size = 0;
+}
+
+/* Inserta un nodo al frente de la lista */
+push(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria) {
+var new_node = new NodoListaPelicula(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria);
+new_node.next = this.head;
+this.head = new_node;
+this.size++;
+}
+
+/* Inserta un nodo en la posisión siguiente */
+append(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria) {
+
+var new_node = new NodoListaPelicula(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria);
+
+if (this.head == null) {
+    this.head = new NodoListaPelicula(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria);
+    this.size++;
+    return;
+}
+
+
+ new_node.next = null;
+
+var last = this.head;
+while (last.next != null)
+    last = last.next;
+    last.next = new_node;
+    this.size++;
+    return;
+}
+
+deleteNode(key) {
+    var temp = this.head, prev = null;
+
+    // Si el propio nodo de cabecera tiene la clave que hay que borrar
+    if (temp != null && temp.nombre_pelicula == key) {
+        this.head = temp.next; // Cambiando la cabeza
+        return;
+    }
+
+    // Buscar la clave que se va a eliminar, mantener la pista de el nodo anterior ya que necesitamos cambiar temp.next
+    while (temp != null && temp.nombre_pelicula != key) {
+        prev = temp;
+        temp = temp.next;
+    }
+
+    // Si la clave no está en la lista
+    if (temp == null)
+        return;
+
+    // Quitando el nodo de la lista
+    prev.next = temp.next;
+}
+
+getCount() {
+    var temp = this.head;
+    var count = 0;
+    while (temp != null) {
+        count++;
+        temp = temp.next;
+    }
+    return count;
+}
+
+// para buscar la informacion en la lista
+buscar(indice){
+    let aux = this.head 
+    while (aux!=null){
+        if(aux.nombre_pelicula == indice){
+            console.log("Si aparece "+aux.nombre_pelicula)
+            
+            return aux
+        }
+        aux = aux.next
+    }
+    console.log("No aparece ")      
+    return this
+}
+
+printList() {
+var tnode = this.head;
+    while (tnode != null) {
+        document.write(tnode.id_pelicula + " " + tnode.nombre_pelicula + " " + tnode.description + " " + tnode.puntuacion_star + " " + tnode.precion_Q + " " + tnode.categoria + "<br>");
+        tnode = tnode.next;
+    }
+}
+
+peliAscendente() {
+    var fin=null
+    
+    
+            while(fin!=this.head){
+    
+                var primero, segundo
+                primero=this.head
+                segundo=this.head
+    
+                while(segundo.next!=fin){
+    
+                    var  tercero=segundo.next
+
+                    if(segundo.nombre_pelicula > tercero.nombre_pelicula){
+    
+                        segundo.next=tercero.next
+                        tercero.next=segundo 
+
+                        if(segundo!=this.head){
+
+                            primero.next=tercero
+                        }
+                        else{
+                            this.head=tercero
+                        }
+    
+    
+                        var aux =segundo
+    
+                        segundo=tercero
+    
+                        tercero=aux
+    
+                    }
+    
+                    primero=segundo
+                    segundo=segundo.next
+    
+                }
+            
+    
+                fin=segundo
+            }
+}
+
+peliDescendente() {
+    var fin=null
+    
+    
+            while(fin!=this.head){
+    
+                var primero, segundo
+                primero=this.head
+                segundo=this.head
+    
+                while(segundo.next!=fin){
+    
+                    var  tercero=segundo.next
+
+                    if(segundo.nombre_pelicula < tercero.nombre_pelicula){
+    
+                        segundo.next=tercero.next
+                        tercero.next=segundo 
+
+                        if(segundo!=this.head){
+
+                            primero.next=tercero
+                        }
+                        else{
+                            this.head=tercero
+                        }
+    
+    
+                        var aux =segundo
+    
+                        segundo=tercero
+    
+                        tercero=aux
+    
+                    }
+    
+                    primero=segundo
+                    segundo=segundo.next
+    
+                }
+            
+    
+                fin=segundo
+            }
+}
+
+metodoUno() {
+    this.peliAscendente()
+    var actual = this.head
+    var table = "<table class='table shadow-sm'>";
+    for (let i = 0; i < this.size; i++) {
+        
+            table += "<tr>";
+            table += `<th scope="col">
+                <FONT FACE="Cambria Bold" SIZE=7 COLOR="black">${actual.nombre_pelicula}</FONT> &nbsp; 
+                <br></br>
+                <FONT SIZE=4 COLOR="blue">Descripción:</FONT><FONT SIZE=3>${actual.description}</FONT>
+                <br></br>
+                <FONT SIZE=4 COLOR="green" >Precio:Q.${actual.precion_Q}.00</FONT>
+                <br></br>
+                <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#ver-paciente" onclick="listaPeliculas.verPeli(${actual.id_pelicula})"><i class="bi bi-eye-fill"></i> INFO</button>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#edit-paciente" onclick="listaPeliculas.comprarPeli(${actual.id_pelicula})"><i class="bi bi-cash-stack"></i> COMPRAR</button>
+                
+            
+            </th>`;
+            table += "</tr>";
+        
+            actual = actual.next
+    }
+    table += "</table>";
+    $("#pelisDiv").html(table);
+}
+
+metodoDos() {
+    this.peliDescendente()
+    var actual = this.head
+    var table = "<table class='table shadow-sm'>";
+    for (let i = 0; i < this.size; i++) {
+        
+            table += "<tr>";
+            table += `<th scope="col">
+                <FONT FACE="Cambria Bold" SIZE=7 COLOR="black">${actual.nombre_pelicula}</FONT> &nbsp; 
+                <br></br>
+                <FONT SIZE=4 COLOR="blue">Descripción:</FONT><FONT SIZE=3>${actual.description}</FONT>
+                <br></br>
+                <FONT SIZE=4 COLOR="green" >Precio:Q.${actual.precion_Q}.00</FONT>
+                <br></br>
+                <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#ver-paciente" onclick="listaPeliculas.verPeli(${actual.id_pelicula})"><i class="bi bi-eye-fill"></i> INFO</button>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#edit-paciente" onclick="listaPeliculas.comprarPeli(${actual.id_pelicula})"><i class="bi bi-cash-stack"></i> COMPRAR</button>
+                
+            
+            </th>`;
+            table += "</tr>";
+        
+            actual = actual.next
+    }
+    table += "</table>";
+    $("#pelisDiv").html(table);
+
+    
+}
+
+
+verPeli(index) {
+    var actual = this.head
+    while (actual != null) {
+        if (actual.id_pelicula == index) {
+            var data = `                                    
+                <strong><h1>${actual.nombre_pelicula}</h1></strong><br>
+                <strong><label>Descripcion:</strong> ${actual.description}</label><br>
+                <strong><label>Estrellas: <strong>${actual.puntuacion_star}</label><br>
+                <strong><label>Precio:</strong> Q ${actual.precion_Q}.00</label><br>
+                <button type="button" class="btn btn-light text-muted mr-2" data-bs-toggle="modal" data-bs-target="#edit-paciente" onclick="comprarPeli(${actual.id_pelicula})"><i class="bi bi-cart-fill"></i></button><br>
+                <strong><label>Cambiar Valoracion: </strong> <input type="text" id="${index}"> </label>
+                <button type="button" class="btn btn-warning" onclick="cambiarValoracion(${index})"><i class="bi bi-star-fill"></i></button><br> 
+                <strong><label>Comentarios: </strong></label><br>
+                <table class="table" id="tablaComentarios"></table>
+                `;
+            data += ` 
+                <strong><label>Usuario:</strong></label>                             
+                <input type="text" id="userr"></input><br> 
+                <strong><label>Comentario:</strong></label>
+                <input type="text" id="comment"></input>
+                <button onclick="crearComentario();crearTabla(comentariosDataBase);mostrarTabla()"><i class="bi bi-chat-left-text-fill"></i></button>
+                `;
+            $("#paciente-data").html(data);
+        }
+        actual = actual.next
+    }
+}
+
+
+cambiarEstrellas(index, valorNuevo) {
+    var actual = this.head
+    while (actual != null) {
+        if (actual.id_pelicula == index) {
+            actual.puntuacion_star = valorNuevo
+            alert("La calificación ha sido cambiada!")
+            this.verPeli(index)
+        }
+        actual = actual.next
+    }
+   
+}
+
+
+}
+
+let listaPeliculas = new ListaSimple2()
+var nombrePeliculas = []
+var comentarios = []
+////////////////////////////////////////////////////////////////////////////////TERMINA LISTA PELICULAS //////////////////////////////////////////////////////////////////////////////////////
+
+
+//FUNCIONES GENERALES
+
+console.log(listaPeliculas)
+
+
+function login(){
+    
+    var user, password;
+    var marcado = document.getElementById("exampleCheck1").checked;
+    user=document.getElementById("usuario").value;
+    password=document.getElementById("contrasenia").value;
+  
+  
+    var UsuarioX= listaUsuarios.buscar(user);
+    
+    if(marcado){
+        if(user=="EDD" && password=="12345678"  ){
+        
+            alert("INICIO DE SESION CORRECTO PARA ADMINISTRADOR")  
+            showDivAdministrador();
+        }else{
+            alert("CREDENCIALES INCORRECTAS PARA ADMINISTRADOR")
+        }
+    }
+    else{
+        if(user==UsuarioX.nombre_usuario && password==UsuarioX.contrasenia ){
+            alert("BIENVENIDO: "+UsuarioX.nombre_usuario)
+            showDivUsuario();
+            //window.location = "ejemplo.html";
+            
+        }
+      
+        else{
+            alert("Credenciales Incorrectas")
+        }  
+
+    }
+    
+    
+ 
+  }
+  
+  
+  function logout(){
+    
+    alert("Sesion cerrada")
+    showDivIniciales()
+    
+  }
+  
+
+
+
+
+function mostrarGrafica1(){
+
+    document.getElementById('grafica1').style.display = 'flex';
+    document.getElementById('grafica2').style.display = 'none';
+    document.getElementById('grafica3').style.display = 'none';
+    document.getElementById('grafica4').style.display = 'none';
+}
+
+function mostrarGrafica2(){
+
+    document.getElementById('grafica1').style.display = 'none';
+    document.getElementById('grafica2').style.display = 'block';
+    document.getElementById('grafica3').style.display = 'none';
+    document.getElementById('grafica4').style.display = 'none';
+}
+
+function mostrarGrafica3(){
+
+    document.getElementById('grafica1').style.display = 'none';
+    document.getElementById('grafica2').style.display = 'none';
+    document.getElementById('grafica3').style.display = 'block';
+    document.getElementById('grafica4').style.display = 'none';
+}
+
+function mostrarGrafica4(){
+
+    document.getElementById('grafica1').style.display = 'none';
+    document.getElementById('grafica2').style.display = 'none';
+    document.getElementById('grafica3').style.display = 'none';
+    document.getElementById('grafica4').style.display = 'block';
+}
+
+
+
+function descargarImagen2() {
+    html2canvas($('#lienzoListaUsuarios')[0]).then(function (canvas) {
+        $(".response").append(canvas);
+        document.body.appendChild(canvas);
+        return Canvas2Image.saveAsPNG(canvas);
+    });
+}
+
+function descargarImagen3() {
+    var container = document.getElementById("lienzoBinarioActores");
+    html2canvas(container, { allowTaint: true }).then(function (canvas) {
+
+        var link = document.createElement("a");
+        document.body.appendChild(link);
+        link.download = "grafoActores.png";
+        link.href = canvas.toDataURL();
+        link.target = '_blank';
+        link.click();
+    });
+}
+
+function descargarImagen4() {
+    var container = document.getElementById("lienzoTablaCategoria");
+    html2canvas(container, { allowTaint: true }).then(function (canvas) {
+
+        var link = document.createElement("a");
+        document.body.appendChild(link);
+        link.download = "grafoCategorias.png";
+        link.href = canvas.toDataURL();
+        link.target = '_blank';
+        link.click();
+    });
+}
+
+window.cambiarValoracion = function cambiarValoracion(index) {
+    var antigua = index
+    var nueva = String(document.getElementById(index).value)
+    if (nueva >= 1 && nueva <= 5) {
+        listaPeliculas.cambiarEstrellas(antigua, nueva)
+    } else {
+        alert("Ingrese una valoración valida")
+    }
+
+    
+}
+
+var comentariosDataBase = []
+
+
+function objComentario(usuario,comentario){
+    this.usuario = usuario
+    this.comentario = comentario
+
+
+}
+
+
+
+function crearComentario(){
+    var usuario = String(document.getElementById("userr").value)
+    var comentario = String(document.getElementById("comment").value)
+    var nuevoComentario = new objComentario(usuario,comentario)
+    comentariosDataBase.push(nuevoComentario)
+    alert("Comentario realizado")
+   
+
+}
+
+
+
+function crearTabla(lista){
+    var stringTabla = "<tr><th>Usuario</th><th>Comentario</th></tr>"
+    for(let comment of lista){
+        let fila = "<tr>"
+        fila += "<td>" + comment.usuario + "</td>"
+        fila += "<td>" + comment.comentario + "</td>"
+        fila += "</tr>"
+        stringTabla += fila;
+    }
+    
+    return stringTabla
+    
+}
+
+function mostrarTabla(){
+    document.getElementById("tablaComentarios").innerHTML = crearTabla(comentariosDataBase)
+
+}
+
+
+function showDivIniciales(){
+    document.getElementById('login').style.display = '';
+    document.getElementById('admin').style.display = 'none';
+    document.getElementById('user').style.display = 'none';
+    
+  }
+  
+  function showDivAdministrador(){
+    document.getElementById('admin').style.display = '';
+    document.getElementById('user').style.display = 'none';
+    document.getElementById('login').style.display = 'none';
+  }
+  
+  function showDivUsuario(){
+    document.getElementById('admin').style.display = 'none';
+    document.getElementById('user').style.display = '';
+    document.getElementById('login').style.display = 'none';
+  }
+
+  function limpiarInicioDeSesion(){
+    document.getElementById("formInicioSesion").reset();
+  }
+
+  showDivIniciales()
