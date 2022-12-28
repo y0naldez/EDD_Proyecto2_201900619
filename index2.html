@@ -128,7 +128,7 @@
                             
                             <br></br>
                             <div class="btn-group-vertical" role="group" aria-label="Button group with nested dropdown">
-                                <button onclick="" type="button" class="btn btn-success" id="descargarUno">Descargar gráfico Peliculas</button>
+                                <button onclick="descargar()" type="button" class="btn btn-success" id="descargarUno">Descargar gráfico Peliculas</button>
                                 <button onclick="" type="button" class="btn btn-success" id="descargarDos">Descargar gráfico Clientes</button>
                                 <button onclick="" type="button" class="btn btn-success" id="descargarTres">Descargar gráfico Actores</button>
                                 <button onclick="" type="button" class="btn btn-success" id="descargarCuatro">Descargar gráfico Categorias</button>      
@@ -150,23 +150,30 @@
             
                             
                    
-                    <div class="row text-center" id="grafica1">
-                        <div id="lienzoAVL"></div>
-                    </div>
-                   
+
+                        <div class="row text-center" id="grafica1">
+                            <div id="lienzoAVL"></div>
+                            
+                        </div>
+                        
+                    
 
 
-                    <div class="row text-center" id="grafica2">
-                        <div id="lienzoListaUsuarios"></div>
-                    </div>
+                        <div class="row text-center" id="grafica2">
+                            <div id="lienzoListaUsuarios"></div>
+                        </div>
 
-                    <div class="row text-center" id="grafica3">
-                        <div id="lienzoBinarioActores"></div>
-                    </div>
+                        <div class="row text-center" id="grafica3">
+                            <div id="lienzoBinarioActores"></div>
+                        </div>
 
-                    <div class="row text-center" id="grafica4">
-                        <div id="lienzoTablaCategoria"></div>
-                    </div>
+                        <div class="row text-center" id="grafica4">
+                            <div id="lienzoTablaCategoria"></div>
+                        </div>
+
+
+                  
+                    
                 
 
             </div>
@@ -179,6 +186,9 @@
 
         <div class="collapse" id="collapse2">
             <h1>AQUI IRIA EL CONTENIDO 2</h1>
+
+            <button onclick="graficarBlockchain()" type="button" class="btn btn-secondary btn-lg btn-block" id="terminarBlock">Terminar compra</button>
+            <div id="divBlock">
         </div>
 
 
@@ -272,6 +282,13 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@3.1.9-1/crypto-js.js"></script>
+    <script> src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js"</script>
+    <script src="svg-export.min.js"></script>
+    <script src="https://unpkg.com/canvg/lib/umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfkit/js/pdfkit.min.js"></script>
+    <script src="https://github.com/devongovett/blob-stream/releases/download/v0.1.3/blob-stream.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-to-pdfkit/source.min.js"></script>
     <script type="text/javascript" src="app.js"></script>
     
  

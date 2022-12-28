@@ -1456,7 +1456,7 @@ metodoUno() {
                 <FONT SIZE=4 COLOR="green" >Precio:Q.${actual.precion_Q}.00</FONT>
                 <br></br>
                 <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#ver-paciente" onclick="listaPeliculas.verPeli(${actual.id_pelicula})"><i class="bi bi-eye-fill"></i> INFO</button>
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#edit-paciente" onclick="listaPeliculas.comprarPeli(${actual.id_pelicula})"><i class="bi bi-cash-stack"></i> COMPRAR</button>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#edit-paciente" onclick="comprarPeli(${actual.id_pelicula})"><i class="bi bi-cash-stack"></i> COMPRAR</button>
                 
             
             </th>`;
@@ -1524,7 +1524,12 @@ verPeli(index) {
         }
         actual = actual.next
     }
+
+
 }
+
+
+
 
 
 cambiarEstrellas(index, valorNuevo) {
@@ -1547,6 +1552,101 @@ let listaPeliculas = new ListaSimple2()
 var nombrePeliculas = []
 var comentarios = []
 ////////////////////////////////////////////////////////////////////////////////TERMINA LISTA PELICULAS //////////////////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////////////EMPIEZA BLOCKCHAIN //////////////////////////////////////////////////////////////////////////////////////
+
+textoBlockchain = "digraph G{"
+var contador=0
+
+class Block{
+    constructor(index,data,previusHash=''){
+        this.index = index;
+        this.date = new Date();
+        this.data = data;
+        this.previusHash = previusHash;
+        this.hash = this.createHash();
+        this.nonce = 0;
+    }
+    
+    createHash(){
+        return CryptoJS.SHA256(this.index + this.date + this.previusHash + this.nonce).toString()
+    }
+
+    mine(difficulty){
+        while(!this.hash.startsWith(difficulty)){
+            this.nonce ++;
+            this.hash = this.createHash();
+        }
+    }
+
+}
+
+class BlockChain{
+    constructor(genesis, difficulty="00"){
+        this.chain = [this.createFirtsBlock(genesis)]
+        this.difficulty = difficulty;
+    }
+
+    createFirtsBlock(genesis){
+        return new Block(0,genesis)
+    }
+
+    getLastBlock(){
+        return this.chain[this.chain.length-1];
+    }
+
+    addBlock(data){
+        let prevBlock = this.getLastBlock();
+        let block = new Block(prevBlock.index+1,data,prevBlock.hash);
+        block.mine(this.difficulty);
+        console.log('Minado! ' +block.hash+ 'con nonce ' + block.nonce)
+        this.chain.push(block);
+        
+        
+        textoBlockchain += `label=" Blockchain ";`
+        textoBlockchain += `node [shape=box];
+                  //agregando nodos
+                  N${contador}[label="Bloque: ${block.index}
+                  `
+        contador ++;
+        textoBlockchain += `Hash: ${block.hash}
+                  Prev: ${block.previusHash}
+                  Transacciones: ${block.data}
+                  Fecha: ${block.date} " ];
+                `
+        
+                
+    }
+
+    isValid(){
+        for(let i=1;i<this.chain.length;i++){
+            let prevBlock = this.chain[i-1];
+            let currBlock = this.chain[i];
+
+            if(currBlock.previusHash != prevBlock.hash)
+                return false
+            
+            if(currBlock.createHash() != currBlock.hash)
+                return false;
+            
+        }
+        return true;
+    }
+
+    
+    
+}
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////TERMINA BLOCKCHAIN //////////////////////////////////////////////////////////////////////////////////////
 
 
 //FUNCIONES GENERALES
@@ -1671,6 +1771,9 @@ function descargarImagen4() {
     });
 }
 
+
+
+
 window.cambiarValoracion = function cambiarValoracion(index) {
     var antigua = index
     var nueva = String(document.getElementById(index).value)
@@ -1751,3 +1854,48 @@ function showDivIniciales(){
   }
 
   showDivIniciales()
+
+  peliculasCompradas = []
+
+function comprarPeli(id){
+    var actual = listaPeliculas.head
+    while (actual != null) {
+        if (actual.id_pelicula == id) {
+                peliculasCompradas.push(actual.nombre_pelicula)
+                naniCoin.addBlock(peliculasCompradas)
+        }
+        actual = actual.next
+    }
+    
+
+}
+
+function graficarBlockchain(){
+        
+    textoBlockchain += "}"
+
+    d3.select("#divBlock").graphviz()
+        .width(900)
+        .height(500)
+        .renderDot(textoBlockchain)
+
+    return textoBlockchain; 
+     
+ }
+
+
+let naniCoin = new BlockChain("info de genesiss","00");
+
+
+
+
+/*
+naniCoin.addBlock("info del segundo bloque");
+naniCoin.addBlock("info del tercer bloque");
+textoBlockchain += "}"
+console.log(JSON.stringify(naniCoin.chain,null,2))
+console.log(naniCoin.isValid())
+console.log(textoBlockchain)
+*/
+
+console.log(JSON.stringify(naniCoin.chain,null,2))
