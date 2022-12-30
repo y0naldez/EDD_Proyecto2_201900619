@@ -234,7 +234,7 @@ function CargaMasivaPeliculas(e){
         
         for (const key in objeto){
             let peliculas2 =objeto[key]
-            listaPeliculas.append(peliculas2.id_pelicula, peliculas2.nombre_pelicula , peliculas2.description , peliculas2.puntuacion_star, peliculas2.precion_Q, peliculas2.categoria)
+            listaPeliculas.append(peliculas2.id_pelicula, peliculas2.nombre_pelicula , peliculas2.descripcion , peliculas2.puntuacion_star, peliculas2.precion_Q, peliculas2.categoria)
             nombrePeliculas.push(peliculas2.nombre_pelicula);
 
            
@@ -1243,10 +1243,10 @@ document.getElementById("jsoncategorias").addEventListener("change", CargaMasiva
 
 
 class NodoListaPelicula {
-    constructor(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria) {
+    constructor(id_pelicula,nombre_pelicula,descripcion,puntuacion_star,precion_Q,paginas,categoria) {
         this.id_pelicula = id_pelicula;
         this.nombre_pelicula = nombre_pelicula;
-        this.description = description;
+        this.descripcion = descripcion;
         this.puntuacion_star = puntuacion_star;
         this.precion_Q = precion_Q;
         this.paginas = paginas;
@@ -1264,20 +1264,20 @@ constructor() {
 }
 
 /* Inserta un nodo al frente de la lista */
-push(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria) {
-var new_node = new NodoListaPelicula(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria);
+push(id_pelicula,nombre_pelicula,descripcion,puntuacion_star,precion_Q,paginas,categoria) {
+var new_node = new NodoListaPelicula(id_pelicula,nombre_pelicula,descripcion,puntuacion_star,precion_Q,paginas,categoria);
 new_node.next = this.head;
 this.head = new_node;
 this.size++;
 }
 
 /* Inserta un nodo en la posisión siguiente */
-append(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria) {
+append(id_pelicula,nombre_pelicula,descripcion,puntuacion_star,precion_Q,paginas,categoria) {
 
-var new_node = new NodoListaPelicula(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria);
+var new_node = new NodoListaPelicula(id_pelicula,nombre_pelicula,descripcion,puntuacion_star,precion_Q,paginas,categoria);
 
 if (this.head == null) {
-    this.head = new NodoListaPelicula(id_pelicula,nombre_pelicula,description,puntuacion_star,precion_Q,paginas,categoria);
+    this.head = new NodoListaPelicula(id_pelicula,nombre_pelicula,descripcion,puntuacion_star,precion_Q,paginas,categoria);
     this.size++;
     return;
 }
@@ -1344,7 +1344,7 @@ buscar(indice){
 printList() {
 var tnode = this.head;
     while (tnode != null) {
-        document.write(tnode.id_pelicula + " " + tnode.nombre_pelicula + " " + tnode.description + " " + tnode.puntuacion_star + " " + tnode.precion_Q + " " + tnode.categoria + "<br>");
+        document.write(tnode.id_pelicula + " " + tnode.nombre_pelicula + " " + tnode.descripcion + " " + tnode.puntuacion_star + " " + tnode.precion_Q + " " + tnode.categoria + "<br>");
         tnode = tnode.next;
     }
 }
@@ -1451,9 +1451,9 @@ metodoUno() {
             table += `<th scope="col">
                 <FONT FACE="Cambria Bold" SIZE=7 COLOR="black">${actual.nombre_pelicula}</FONT> &nbsp; 
                 <br></br>
-                <FONT SIZE=4 COLOR="blue">Descripción:</FONT><FONT SIZE=3>${actual.description}</FONT>
+                <FONT SIZE=4 COLOR="blue">Descripción:</FONT><FONT SIZE=3>${actual.descripcion}</FONT>
                 <br></br>
-                <FONT SIZE=4 COLOR="green" >Precio:Q.${actual.precion_Q}.00</FONT>
+                <FONT SIZE=4 COLOR="green" >Precio:Q.${actual.precion_Q}</FONT>
                 <br></br>
                 <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#ver-paciente" onclick="listaPeliculas.verPeli(${actual.id_pelicula})"><i class="bi bi-eye-fill"></i> INFO</button>
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#edit-paciente" onclick="comprarPeli(${actual.id_pelicula})"><i class="bi bi-cash-stack"></i> COMPRAR</button>
@@ -1478,12 +1478,12 @@ metodoDos() {
             table += `<th scope="col">
                 <FONT FACE="Cambria Bold" SIZE=7 COLOR="black">${actual.nombre_pelicula}</FONT> &nbsp; 
                 <br></br>
-                <FONT SIZE=4 COLOR="blue">Descripción:</FONT><FONT SIZE=3>${actual.description}</FONT>
+                <FONT SIZE=4 COLOR="blue">Descripción:</FONT><FONT SIZE=3>${actual.descripcion}</FONT>
                 <br></br>
-                <FONT SIZE=4 COLOR="green" >Precio:Q.${actual.precion_Q}.00</FONT>
+                <FONT SIZE=4 COLOR="green" >Precio:Q.${actual.precion_Q}</FONT>
                 <br></br>
                 <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#ver-paciente" onclick="listaPeliculas.verPeli(${actual.id_pelicula})"><i class="bi bi-eye-fill"></i> INFO</button>
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#edit-paciente" onclick="listaPeliculas.comprarPeli(${actual.id_pelicula})"><i class="bi bi-cash-stack"></i> COMPRAR</button>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#edit-paciente" onclick="comprarPeli(${actual.id_pelicula})"><i class="bi bi-cash-stack"></i> COMPRAR</button>
                 
             
             </th>`;
@@ -1504,9 +1504,9 @@ verPeli(index) {
         if (actual.id_pelicula == index) {
             var data = `                                    
                 <strong><h1>${actual.nombre_pelicula}</h1></strong><br>
-                <strong><label>Descripcion:</strong> ${actual.description}</label><br>
+                <strong><label>Descripcion:</strong> ${actual.descripcion}</label><br>
                 <strong><label>Estrellas: <strong>${actual.puntuacion_star}</label><br>
-                <strong><label>Precio:</strong> Q ${actual.precion_Q}.00</label><br>
+                <strong><label>Precio:</strong> Q ${actual.precion_Q}</label><br>
                 <button type="button" class="btn btn-light text-muted mr-2" data-bs-toggle="modal" data-bs-target="#edit-paciente" onclick="comprarPeli(${actual.id_pelicula})"><i class="bi bi-cart-fill"></i></button><br>
                 <strong><label>Cambiar Valoracion: </strong> <input type="text" id="${index}"> </label>
                 <button type="button" class="btn btn-warning" onclick="cambiarValoracion(${index})"><i class="bi bi-star-fill"></i></button><br> 
@@ -1853,7 +1853,7 @@ function showDivIniciales(){
     document.getElementById("formInicioSesion").reset();
   }
 
-  showDivIniciales()
+ 
 
   peliculasCompradas = []
 
@@ -1866,7 +1866,7 @@ function comprarPeli(id){
         }
         actual = actual.next
     }
-    
+    alert("Pelicula comprada con exito!!")
 
 }
 
@@ -1883,10 +1883,33 @@ function graficarBlockchain(){
      
  }
 
+ var miIntervalo;
+
+ function minarAhora(){
+    naniCoin.addBlock(" " + peliculasCompradas)
+    console.log("Un nuevo bloque ha sido minado!.");
+ }
+
+ function cambiarIntervalo(nuevoTiempo) {
+    clearInterval(miIntervalo);
+    var nuevoTiempo = document.getElementById("miliS").value
+    miIntervalo = setInterval(minarAhora, nuevoTiempo);
+    alert("TIempo de minado cambiado!!")
+  }
 
 let naniCoin = new BlockChain("info de genesiss","00");
 
+showDivIniciales()
 
+
+
+function Invervalo(){
+    miIntervalo = setInterval(minarAhora, 300000);
+}
+
+
+
+Invervalo()
 
 
 /*
