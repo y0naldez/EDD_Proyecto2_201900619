@@ -5,208 +5,178 @@
 ////////////////////////////////////////////////////////////////////////////////EMPIEZA ARBOL AVL //////////////////////////////////////////////////////////////////////////////////////////
 
 
-class Nodo{
-
-    constructor(d){
-        this.dato = d;
-        this.fe = 0;
-        this.hijoDerecho = null;
-        this.hijoIzquierdo = null;
+class NodeAVL {
+    constructor(dato, nombre) {
+        this.dato = dato;
+        this.nombre = nombre;
+        this.Previous = null;
+        this.Next = null;
     }
-
-    textGraphviz(){
-    
-        if( this.hijoIzquierdo==  null && this.hijoDerecho==null){
-            return this.dato
-        }else{
-            var texto = "";
-            if(this.hijoIzquierdo != null){
-                texto = this.dato + "->"+this.hijoIzquierdo.textGraphviz() + "\n";
-            }
-            if(this.hijoDerecho != null){
-                texto += this.dato + "->" +this.hijoDerecho.textGraphviz() +"\n";
-            }
-            return texto;
-        }
-    }
-
 }
 
-class ArbolAVL{
-
-    constructor(){
+class Avl {
+    constructor() {
         this.raiz = null;
+        this.altura = -1;
+        this.equilibrio = 0;
     }
 
-    obtenerRaiz(){
-        return this.raiz;
-    }
+    insertar(dato) {
+        var nuevo;
+        nuevo = new NodeAVL(dato);
 
-    buscar(d,r){
-        if(raiz == null){
-            return null;
-        }else if(r.dato == d){
-            return r;
-        }else if(r.dato <d){
-            return buscar(d, r.hijoDerecho);
-        }else{
-            return buscar(d, r.hijoIzquierdo);
-        } 
-    }
-
-    //Obtener el factor equilibrio
-    obtenerFE(x){
-    if(x==null){
-        return -1;
-    }else{
-        return x.fe;
-        }
-    }
-
-    //Rotacion simple izquierda  
-    rotacionIzquierda(c){
-    var auxiliar = c.hijoIzquierdo;
-    c.hijoIzquierdo = auxiliar.hijoDerecho;
-    auxiliar.hijoDerecho = c;
-    c.fe = Math.max(this.obtenerFE(c.hijoIzquierdo), this.obtenerFE(c.hijoDerecho))+1;
-    auxiliar.fe = Math.max(this.obtenerFE(auxiliar.hijoIzquierdo), this.obtenerFE(auxiliar.hijoDerecho))+1;
-    return auxiliar;
-    }
-
-    //Rotacion simple derecha
-    rotacionDerecha(c){
-    var auxiliar = c.hijoDerecho;
-    c.hijoDerecho = auxiliar.hijoIzquierdo;
-    auxiliar.hijoIzquierdo = c;
-    c.fe = Math.max(this.obtenerFE(c.hijoIzquierdo), this.obtenerFE(c.hijoDerecho))+1;
-    auxiliar.fe = Math.max(this.obtenerFE(auxiliar.hijoIzquierdo), this.obtenerFE(auxiliar.hijoDerecho))+1;
-    return auxiliar;
-    }
-
-    //puede que sean al reves
-    rotacionDobleIzquierda(c){
-    var temporal;
-    c.hijoIzquierdo = this.rotacionDerecha(c.hijoIzquierdo);
-    temporal = this.rotacionIzquierda(c);
-    return temporal;
-    }
-
-    rotacionDobleDerecha(c){
-        var temporal;
-        c.hijoDerecho = this.rotacionIzquierda(c.hijoDerecho);
-        temporal = this.rotacionDerecha(c);
-        return temporal;
-    }
-
-    //Metodo insertar AVL
-    insertarAVL(nuevo, subAr){
-    var nuevoPadre = subAr;
-    if(nuevo.dato < subAr.dato){
-        if(subAr.hijoIzquierdo == null){
-            subAr.hijoIzquierdo = nuevo;
-        }else{
-            subAr.hijoIzquierdo = this.insertarAVL(nuevo, subAr.hijoIzquierdo);
-            if((this.obtenerFE(subAr.hijoIzquierdo)- this.obtenerFE(subAr.hijoDerecho) ==2)){
-                if(nuevo.dato < subAr.hijoIzquierdo.dato){
-                    nuevoPadre = this.rotacionIzquierda(subAr);
-                }else{
-                    nuevoPadre = this.rotacionDobleIzquierda(subAr);
+        if (this.raiz === null) {
+            this.raiz = nuevo;
+            this.raiz.Previous = new Avl();
+            this.raiz.Next = new Avl();
+        } else {
+            if (dato.id_pelicula > this.raiz.dato.id_pelicula) {
+                this.raiz.Next.insertar(dato);
+            } else {
+                if (dato.id_pelicula < this.raiz.dato.id_pelicula) {
+                    this.raiz.Previous.insertar(dato);
+                } else {
+                    console.log("el valor ya existe");
                 }
             }
         }
+
+        this.balancear();
     }
-    else if(nuevo.dato > subAr.dato){
-        if(subAr.hijoDerecho == null){
-            subAr.hijoDerecho = nuevo;
-        }else{
-            subAr.hijoDerecho = this.insertarAVL(nuevo, subAr.hijoDerecho);
-            if((this.obtenerFE(subAr.hijoDerecho)- this.obtenerFE(subAr.hijoIzquierdo) ==2)){
-                if(nuevo.dato > subAr.hijoDerecho.dato){
-                    nuevoPadre = this.rotacionDerecha(subAr);
-                }else{
-                    nuevoPadre = this.rotacionDobleDerecha(this.raiz); //puede ser sub
+
+    balancear() {
+        this.actualizarAlturas({
+            "recursivo": false
+        });
+        this.actualizarEquilibrio(false);
+
+        while (this.equilibrio < -1 || this.equilibrio > 1) {
+            if (this.equilibrio > 1) {
+                if (this.raiz.Previous.equilibrio < 0) {
+                    this.raiz.Previous.rotacionziquierda();
+                    this.actualizarAlturas();
+                    this.actualizarEquilibrio();
                 }
-                
+
+                this.rotacionDerecha();
+                this.actualizarAlturas();
+                this.actualizarEquilibrio();
+            }
+
+            if (this.equilibrio < -1) {
+                if (this.raiz.Next.equilibrio > 0) {
+                    this.raiz.Next.rotacionDerecha();
+                    this.actualizarAlturas();
+                    this.actualizarEquilibrio();
+                }
+
+                this.rotacionziquierda();
+                this.actualizarAlturas();
+                this.actualizarEquilibrio();
             }
         }
-    }else{
-        System.out.println("Nodo duplicado");
-    }
-    
-    //Actualizar altura
-    if((subAr.hijoIzquierdo == null) && (subAr.hijoDerecho != null)){
-        subAr.fe = subAr.hijoDerecho.fe+1;
-    }else if((subAr.hijoDerecho == null) && subAr.hijoIzquierdo != null){
-        subAr.fe = subAr.hijoIzquierdo.fe+1;
-    }else{
-        subAr.fe = Math.max(this.obtenerFE(subAr.hijoIzquierdo), this.obtenerFE(subAr.hijoDerecho))+1;
-    }
-    return nuevoPadre;
     }
 
+    actualizarAlturas(recursivo = true) {
+        if (this.raiz === null) {
+            this.altura = -1;
+        } else {
+            if (recursivo) {
+                if (this.raiz.Previous !== null) {
+                    this.raiz.Previous.actualizarAlturas();
+                }
 
-    //Insertar
-    insertar(d){
-    var nuevo = new Nodo(d);
-    if(this.raiz == null){
-        this.raiz = nuevo;
-    }else{
-        this.raiz = this.insertarAVL(nuevo, this.raiz);
-    }
-    }
-
-    //Recorridos
-    inOrden(r){
-    if(r!=null){
-        this.inOrden(r.hijoIzquierdo);
-        console.log(r.dato+" ");
-        this.inOrden(r.hijoDerecho);
+                if (this.raiz.Next !== null) {
+                    this.raiz.Next.actualizarAlturas();
+                }
+            }
+            this.altura = Math.max(this.raiz.Previous.altura, this.raiz.Next.altura) + 1;
         }
     }
 
-    preOrden(r){
-        if(r!=null){
-            console.log(r.dato+" ");
-            this.preOrden(r.hijoIzquierdo);
-            this.preOrden(r.hijoDerecho);
+    actualizarEquilibrio(recursivo = true) {
+        if (this.raiz === null) {
+            this.equilibrio = 0;
+        } else {
+            if (recursivo) {
+                if (this.raiz.Previous !== null) {
+                    this.raiz.Previous.actualizarEquilibrio();
+                }
+
+                if (this.raiz.Next !== null) {
+                    this.raiz.Next.actualizarEquilibrio();
+                }
+            }
+
+            this.equilibrio = this.raiz.Previous.altura - this.raiz.Next.altura;
         }
     }
 
-    postOrden(r){
-        if(r!=null){
-            this.postOrden(r.hijoIzquierdo);
-            this.postOrden(r.hijoDerecho);
-            console.log(r.dato+"");
-        }
-         
+    rotacionDerecha() {
+        var raiz;
+        raiz = this.raiz;
+        this.raiz = raiz.Previous.raiz;
+        raiz.Previous.raiz = this.raiz.Next.raiz;
+        this.raiz.Next.raiz = raiz;
     }
 
+    rotacionziquierda() {
+        var raiz;
+        raiz = this.raiz;
+        this.raiz = raiz.Next.raiz;
+        raiz.Next.raiz = this.raiz.Previous.raiz;
+        this.raiz.Previous.raiz = raiz;
+    }
 
-    obtenerCodigoGraphviz(){
-         var texto = "digraph G { \nlabel=\" Arbol AVL - ID peliculas \" \n";
-         texto += "node[shape = circle] \n";
-         texto += "node[style = filled] \n";
-         texto += "node[fillcolor = yellow] \n";
-         texto += "node[color = white] \n";
-         texto += "edge[color = black] \n";
-        if(this.raiz !=null){
-            texto += this.raiz.textGraphviz();
+    graficarArbol(raiz) {
+        var acumuladores;
+        acumuladores = ["digraph G{\nlabel=\"Peliculas\"\nnode [shape=rectangle];\n", ""];
+        if (raiz !== null) {
+            this.recorrerArbol(raiz, acumuladores);
         }
-        texto += "}";
+        acumuladores[0] += acumuladores[1] + "\n}";
 
+        //console.log(acumuladores[0]);      
         d3.select("#lienzoAVL").graphviz()
-            .width(900)
-            .height(500)
-            .renderDot(texto)
+            .width("900")
+            .height("500")
+            .fit(true)
+            .renderDot(acumuladores[0])
+    }
 
-        return texto;  
+    recorrerArbol(raiz, acum) {
+        if (raiz) {
+            acum[1] += "\"" + (raiz.dato.id_pelicula) + "\"[label=\"" + raiz.dato.id_pelicula + "\"];\n";
+
+            if (raiz.Previous.raiz !== null) {
+                acum[1] += "\"" + (raiz.dato.id_pelicula) + "\" -> \"" + (raiz.Previous.raiz.dato.id_pelicula) + "\";\n";
+            }
+
+            if (raiz.Next.raiz !== null) {
+                acum[1] += "\"" + (raiz.dato.id_pelicula) + "\" -> \"" + (raiz.Next.raiz.dato.id_pelicula) + "\";\n";
+            }
+
+            this.recorrerArbol(raiz.Previous.raiz, acum);
+            this.recorrerArbol(raiz.Next.raiz, acum);
+        }
     }
 
 }
 
 
-var peliculasAvl = new ArbolAVL()
+var peliculasAvl = new Avl()
 var salida =document.getElementById("movies")
+
+class pelicula {
+    constructor(id_pelicula, nombre_pelicula, descripcion, puntuacion_star, precio_Q) {
+        this.id_pelicula = id_pelicula;
+        this.nombre_pelicula = nombre_pelicula;
+        this.descripcion = descripcion;
+        this.puntuacion_star = puntuacion_star;
+        this.precio_Q = precio_Q;
+    }
+}
+
 
 function CargaMasivaPeliculas(e){
     var archivo =e.target.files[0];
@@ -227,7 +197,7 @@ function CargaMasivaPeliculas(e){
         //para mandarlo a la estructura
         for (const key in objeto){
             let peliculas =objeto[key]
-            peliculasAvl.insertar(peliculas.id_pelicula)
+            peliculasAvl.insertar(new pelicula(peliculas.id_pelicula, peliculas.nombre_pelicula, peliculas.descripcion, peliculas.puntuacion_star, peliculas.precio_Q));
         }
 
         
@@ -1614,6 +1584,7 @@ class BlockChain{
         textoBlockchain += `Hash: ${block.hash}
                   Prev: ${block.previusHash}
                   Transacciones: ${block.data}
+                  Nonce: ${block.nonce}
                   Fecha: ${block.date} " ];
                 `
         
@@ -1705,7 +1676,7 @@ function login(){
 
 function mostrarGrafica1(){
 
-    document.getElementById('grafica1').style.display = 'flex';
+    document.getElementById('grafica1').style.display = 'block';
     document.getElementById('grafica2').style.display = 'none';
     document.getElementById('grafica3').style.display = 'none';
     document.getElementById('grafica4').style.display = 'none';
@@ -1738,11 +1709,12 @@ function mostrarGrafica4(){
 
 
 function descargarImagen2() {
-    html2canvas($('#lienzoListaUsuarios')[0]).then(function (canvas) {
-        $(".response").append(canvas);
-        document.body.appendChild(canvas);
-        return Canvas2Image.saveAsPNG(canvas);
-    });
+    
+        html2canvas($('#pruebaaaaaaaa')[0]).then(function (canvas) {
+            document.body.appendChild(canvas);
+            return Canvas2Image.saveAsPNG(canvas);
+        });
+    
 }
 
 function descargarImagen3() {
@@ -1886,7 +1858,7 @@ function graficarBlockchain(){
  var miIntervalo;
 
  function minarAhora(){
-    naniCoin.addBlock(" " + peliculasCompradas)
+    naniCoin.addBlock( peliculasCompradas + " ***")
     console.log("Un nuevo bloque ha sido minado!.");
  }
 
@@ -1899,7 +1871,7 @@ function graficarBlockchain(){
 
 let naniCoin = new BlockChain("info de genesiss","00");
 
-showDivIniciales()
+//showDivIniciales()
 
 
 

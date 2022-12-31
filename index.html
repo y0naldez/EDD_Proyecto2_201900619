@@ -10,7 +10,6 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 </head>
 <body>
-    
     <br></br>
     <br></br>
     <div id="login">
@@ -197,14 +196,14 @@
                 <div id="botonesGraficas">
                         <div class="btn-group-horizontal" role="group"
                             aria-label="Button group with nested dropdown">
-                            <button onclick="mostrarGrafica1(); peliculasAvl.obtenerCodigoGraphviz();" type="button" class="btn btn-primary" id="uno">Gráfico Peliculas</button>
+                            <button onclick="mostrarGrafica1(); peliculasAvl.graficarArbol(peliculasAvl.raiz);" type="button" class="btn btn-primary" id="uno">Gráfico Peliculas</button>
                             <button onclick="mostrarGrafica2();listaUsuarios.graficarlista();" type="button" class="btn btn-primary" id="dos">Gráfico Clientes</button>
                             <button onclick="mostrarGrafica3();arbolActores.graficar();" type="button" class="btn btn-primary" id="tres">Gráfico Actores</button>
                             <button onclick="mostrarGrafica4();tablaCategoria.graficartabla();" type="button" class="btn btn-primary" id="cuatro">Gráfico Categorias</button>
                             
                             <br></br>
                             <div class="btn-group-vertical" role="group" aria-label="Button group with nested dropdown">
-                                <button onclick="descargar()" type="button" class="btn btn-success" id="descargarUno">Descargar gráfico Peliculas</button>
+                                <button  type="button" class="btn btn-success" id="boton-descarga">Descargar gráfico Peliculas</button>
                                 <button onclick="" type="button" class="btn btn-success" id="descargarDos">Descargar gráfico Clientes</button>
                                 <button onclick="" type="button" class="btn btn-success" id="descargarTres">Descargar gráfico Actores</button>
                                 <button onclick="" type="button" class="btn btn-success" id="descargarCuatro">Descargar gráfico Categorias</button>      
@@ -229,7 +228,7 @@
 
                         <div class="row text-center" id="grafica1">
                             <div id="lienzoAVL"></div>
-                            
+                            <div id="previewImg"></div>
                         </div>
                         
                     
@@ -275,7 +274,8 @@
     
     
 
-    
+    <script src="https://superal.github.io/canvas2image/canvas2image.js "></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="//d3js.org/d3.v5.min.js"></script>
     <script src="https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min.js"></script>
     <script src="https://unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz.js"></script>
@@ -283,13 +283,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js" type="text/javascript"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/crypto-js@3.1.9-1/crypto-js.js"></script>
+
     <script type="text/javascript" src="app.js"></script>
-    
+
  
 
 </body>
