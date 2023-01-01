@@ -1707,43 +1707,115 @@ function mostrarGrafica4(){
 }
 
 
+const $boton = document.querySelector("#btnCapturar") // El botón que desencadena
 
-function descargarImagen2() {
-    
-        html2canvas($('#pruebaaaaaaaa')[0]).then(function (canvas) {
-            document.body.appendChild(canvas);
-            return Canvas2Image.saveAsPNG(canvas);
+function capturarPeliculas(){
+    $objetivo = document.querySelector("#lienzoAVL"), // A qué le tomamos la foto
+    $contenedorCanvas = document.querySelector("#screen"); // En dónde ponemos el elemento canvas
+
+    // Agregar el listener al botón
+    $boton.addEventListener("click", () => {
+    html2canvas($objetivo) // Llamar a html2canvas y pasarle el elemento
+        .then(canvas => {
+        // Cuando se resuelva la promesa traerá el canvas
+        $contenedorCanvas.appendChild(canvas); // Lo agregamos como hijo del div
         });
+    });
+    alert("Grafica de peliculas capturada")
     
 }
 
-function descargarImagen3() {
-    var container = document.getElementById("lienzoBinarioActores");
-    html2canvas(container, { allowTaint: true }).then(function (canvas) {
+const $boton2 = document.querySelector("#btnCapturar2") // El botón que desencadena
+function capturarClientes(){
+    $objetivo = document.querySelector("#lienzoListaUsuarios"), // A qué le tomamos la foto
+    $contenedorCanvas = document.querySelector("#screen2"); // En dónde ponemos el elemento canvas
 
-        var link = document.createElement("a");
-        document.body.appendChild(link);
-        link.download = "grafoActores.png";
-        link.href = canvas.toDataURL();
-        link.target = '_blank';
-        link.click();
+    // Agregar el listener al botón
+    $boton2.addEventListener("click", () => {
+    html2canvas($objetivo) // Llamar a html2canvas y pasarle el elemento
+        .then(canvas => {
+        // Cuando se resuelva la promesa traerá el canvas
+        $contenedorCanvas.appendChild(canvas); // Lo agregamos como hijo del div
+        });
     });
+    alert("Grafica de clientes capturada")
+
 }
 
-function descargarImagen4() {
-    var container = document.getElementById("lienzoTablaCategoria");
-    html2canvas(container, { allowTaint: true }).then(function (canvas) {
+const $boton3 = document.querySelector("#btnCapturar3") // El botón que desencadena
+function capturarActores(){
+    $objetivo = document.querySelector("#lienzoBinarioActores"), // A qué le tomamos la foto
+    $contenedorCanvas = document.querySelector("#screen3"); // En dónde ponemos el elemento canvas
 
-        var link = document.createElement("a");
-        document.body.appendChild(link);
-        link.download = "grafoCategorias.png";
-        link.href = canvas.toDataURL();
-        link.target = '_blank';
-        link.click();
+    // Agregar el listener al botón
+    $boton3.addEventListener("click", () => {
+    html2canvas($objetivo) // Llamar a html2canvas y pasarle el elemento
+        .then(canvas => {
+        // Cuando se resuelva la promesa traerá el canvas
+        $contenedorCanvas.appendChild(canvas); // Lo agregamos como hijo del div
+        });
     });
+    alert("Grafica de actores capturada")
+
+
+}
+
+const $boton4 = document.querySelector("#btnCapturar4") // El botón que desencadena
+function capturarCategorias(){
+    $objetivo = document.querySelector("#lienzoTablaCategoria"), // A qué le tomamos la foto
+    $contenedorCanvas = document.querySelector("#screen4"); // En dónde ponemos el elemento canvas
+
+    // Agregar el listener al botón
+    $boton4.addEventListener("click", () => {
+    html2canvas($objetivo) // Llamar a html2canvas y pasarle el elemento
+        .then(canvas => {
+        // Cuando se resuelva la promesa traerá el canvas
+        $contenedorCanvas.appendChild(canvas); // Lo agregamos como hijo del div
+        });
+    });
+    alert("Grafica de categorias capturada")
+
 }
 
 
+
+
+function download_image(){
+    var canvas = document.getElementById('screen').querySelector('canvas');
+    image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    var link = document.createElement('a');
+    link.download = "peliculas.png";
+    link.href = image;
+    link.click();
+}
+
+function download_image2(){
+    var canvas = document.getElementById('screen2').querySelector('canvas');
+    image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    var link = document.createElement('a');
+    link.download = "clientes.png";
+    link.href = image;
+    link.click();
+}
+
+function download_image3(){
+    var canvas = document.getElementById('screen3').querySelector('canvas');
+    image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    var link = document.createElement('a');
+    link.download = "actores.png";
+    link.href = image;
+    link.click();
+}
+
+
+function download_image4(){
+    var canvas = document.getElementById('screen4').querySelector('canvas');
+    image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    var link = document.createElement('a');
+    link.download = "categorias.png";
+    link.href = image;
+    link.click();
+}
 
 
 window.cambiarValoracion = function cambiarValoracion(index) {
@@ -1806,6 +1878,11 @@ function showDivIniciales(){
     document.getElementById('login').style.display = '';
     document.getElementById('admin').style.display = 'none';
     document.getElementById('user').style.display = 'none';
+    document.getElementById('apartadoImagenes').style.display = 'none';
+    document.getElementById('screen').style.display = 'none';
+    document.getElementById('screen2').style.display = 'none';
+    document.getElementById('screen3').style.display = 'none';
+    document.getElementById('screen4').style.display = 'none';
     
   }
   
@@ -1813,12 +1890,23 @@ function showDivIniciales(){
     document.getElementById('admin').style.display = '';
     document.getElementById('user').style.display = 'none';
     document.getElementById('login').style.display = 'none';
+    document.getElementById('apartadoImagenes').style.display = '';
+    document.getElementById('screen').style.display = '';
+    document.getElementById('screen2').style.display = '';
+    document.getElementById('screen3').style.display = '';
+    document.getElementById('screen4').style.display = '';
   }
   
   function showDivUsuario(){
     document.getElementById('admin').style.display = 'none';
     document.getElementById('user').style.display = '';
     document.getElementById('login').style.display = 'none';
+    document.getElementById('apartadoImagenes').style.display = 'none';
+    document.getElementById('screen').style.display = 'none';
+    document.getElementById('screen2').style.display = 'none';
+    document.getElementById('screen3').style.display = 'none';
+    document.getElementById('screen4').style.display = 'none';
+    
   }
 
   function limpiarInicioDeSesion(){
@@ -1858,7 +1946,9 @@ function graficarBlockchain(){
  var miIntervalo;
 
  function minarAhora(){
-    naniCoin.addBlock( peliculasCompradas + " ***")
+    var vacio = " *** "
+    peliculasCompradas.push(vacio)
+    naniCoin.addBlock(peliculasCompradas)
     console.log("Un nuevo bloque ha sido minado!.");
  }
 
@@ -1871,7 +1961,7 @@ function graficarBlockchain(){
 
 let naniCoin = new BlockChain("info de genesiss","00");
 
-//showDivIniciales()
+showDivIniciales()
 
 
 
